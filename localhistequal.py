@@ -1,10 +1,10 @@
 # Standard imports
 import cv2
 import numpy as np;
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 # Read image
-img = cv2.imread("sl11.jpg", cv2.IMREAD_COLOR)
+img = cv2.imread("7.jpg", cv2.IMREAD_COLOR)
 #img = cv2.imread("fish.png", cv2.IMREAD_GRAYSCALE)
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
