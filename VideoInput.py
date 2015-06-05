@@ -4,10 +4,18 @@
 import cv2
 import numpy as np;
 
-VIDEO_FILE = 'C:\Users\Yuri\Documents\UvA\Tweedejaarsproject\Data\Computer Vision on Drones\Testdag\GoPro Films\slaapkamerbrand2.mp4'
+#import os
+#for file in os.listdir("."):
+#    print(file)
+
+
+VIDEO_FILE = 'slaapkamerbrand2.mp4'
 
 cap = cv2.VideoCapture(VIDEO_FILE);
 print cap
+
+if not cap.isOpened():
+	print 'error'
 
 while(cap.isOpened()):
 	print 'Open'

@@ -1,10 +1,15 @@
 # Standard imports
 import cv2
 import numpy as np;
+import sys
 
-VIDEO_FILE = 'slaapkamerbrand2.mp4'
+VIDEO_FILE = sys.argv[1]
+
+#VIDEO_FILE = 'slaapkamerbrand2.mp4'
 
 cap = cv2.VideoCapture(VIDEO_FILE);
+
+#cap = cv2.resize(cap, (800,600))
 
 while(cap.isOpened()):
 	# Read frame from video
@@ -29,7 +34,7 @@ while(cap.isOpened()):
 	res = cv2.bitwise_and(img,img, mask= dilation)
 
 	cv2.imshow('frame',img)
-	cv2.imshow('mask',dilation)
+	#cv2.imshow('mask',dilation)
 	cv2.imshow('res',res)
 
 	if cv2.waitKey(1) & 0xFF == ord('q'):
