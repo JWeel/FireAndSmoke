@@ -2,9 +2,11 @@
 import cv2
 import numpy as np;
 import sys
+import time
+from time import sleep
 
 if len(sys.argv) < 2:
-	VIDEO_FILE = 'slaapkamerbrand2.mp4'
+	VIDEO_FILE = 'aigfire.mp4'
 else:
 	VIDEO_FILE = sys.argv[1]
 
@@ -14,6 +16,7 @@ cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Frame', 2133, 600)
 
 while(cap.isOpened()):
+	startlooptime = int(round(time.time() * 1000))
 	# Read frame from video
 	RET, img = cap.read()
 
@@ -47,6 +50,14 @@ while(cap.isOpened()):
 	
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
+
+	# Run at 25 fps
+	while int(round(time.time() * 1000)) < startlooptime + 40:
+		pass
+
+
+		
+
 
 # When everything done, release the capture
 cap.release()
