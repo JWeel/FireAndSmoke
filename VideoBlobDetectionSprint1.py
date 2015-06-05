@@ -19,7 +19,7 @@ if not os.path.isfile(VIDEO_FILE):
 cap = cv2.VideoCapture(VIDEO_FILE)
 
 # calculate frame-rate for updating bit-masking
-fps = cap.get(5) # 5 is index of the frame-rate property of video
+fps = cap.get(5) # 5 is index of the frame rate property of video
 frametime = 1000 / fps
 
 # create window that will contain original and altered footage
