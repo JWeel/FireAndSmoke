@@ -5,29 +5,7 @@ import sys
 import time
 import os.path
 
-<<<<<<< HEAD
-# Does blob detection on given frame and draws them onto the frame
-def classifyBlobs(img):
-	# HSV version of img
-	hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-
-	# Filter for colors from red to yellow
-	filter_img = cv2.inRange(hsv_img, ORANGE_MIN, ORANGE_MAX);
-
-	# Invert img
-	filter_img = (255 - filter_img)
-
-	# Detect blobs.
-	keypoints = detector.detect(filter_img)
-	
-	# Draw detected blobs as red circles.
-	# cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures
-	# the size of the circle corresponds to the size of blob
-	return cv2.drawKeypoints(img, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-=======
 # check for command-line file, use default if none given
->>>>>>> origin/master
 if len(sys.argv) < 2:
 	VIDEO_FILE = 'aigfire.mp4'
 else:
@@ -76,55 +54,16 @@ while(cap.isOpened()):
 	# Bitwise-AND mask and original image
 	res = cv2.bitwise_and(img,img, mask= dilation)
 
-<<<<<<< HEAD
-	res_blobs = classifyBlobs(res)
-
-	double = np.hstack((img, res_blobs))
-
-
-=======
 	double = np.hstack((img, res))
->>>>>>> origin/master
 
 	cv2.imshow('Frame',double)
 	
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 
-<<<<<<< HEAD
-# Setup SimpleBlobDetector parameters.
-params = cv2.SimpleBlobDetector_Params()
-
-# Change thresholds
-params.minThreshold = 0
-params.maxThreshold = 255
-
-# Filter by Area.
-params.filterByArea = True
-params.minArea = 100
-params.maxArea = 1000000
-
-# Filter by Circularity
-params.filterByCircularity = False
-params.minCircularity = 0.1
-
-# Filter by Convexity
-params.filterByConvexity = False
-params.minConvexity = 0.87
-    
-# Filter by Inertia
-params.filterByInertia = False
-params.minInertiaRatio = 0.01
-
-# These two variables desrcibe the lower and upper
-# bounds of HSV color space we want to classify
-FIRE_MIN = np.array([0, 10, 100],np.uint8)
-FIRE_MAX = np.array([34, 250, 250],np.uint8)
-=======
 	# Run at 25 fps
 	while int(round(time.time() * 1000)) < startlooptime + frametime:
 		pass
->>>>>>> origin/master
 
 # When everything done, release the capture
 cap.release()
