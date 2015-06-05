@@ -2,7 +2,10 @@
 import cv2
 import numpy as np;
 import sys
+import time
+import os.path
 
+<<<<<<< HEAD
 # Does blob detection on given frame and draws them onto the frame
 def classifyBlobs(img):
 	# HSV version of img
@@ -22,24 +25,38 @@ def classifyBlobs(img):
 	# the size of the circle corresponds to the size of blob
 	return cv2.drawKeypoints(img, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
+=======
+# check for command-line file, use default if none given
+>>>>>>> origin/master
 if len(sys.argv) < 2:
-	VIDEO_FILE = 'slaapkamerbrand2.mp4'
+	VIDEO_FILE = 'aigfire.mp4'
 else:
 	VIDEO_FILE = sys.argv[1]
 
-cap = cv2.VideoCapture(VIDEO_FILE);
+# halt if file doesn't exist
+if not os.path.isfile(VIDEO_FILE):
+	print 'Video file not found.'
+	sys.exit()
 
+cap = cv2.VideoCapture(VIDEO_FILE)
+
+# calculate frame-rate for updating bit-masking
+fps = cap.get(5) # 5 is index of the frame-rate property of video
+frametime = 1000 / fps
+
+# create window that will contain original and altered footage
 cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Frame', 2133, 600)
 
 while(cap.isOpened()):
+	startlooptime = int(round(time.time() * 1000))
 	# Read frame from video
 	RET, img = cap.read()
-
-	# Exit loop on last frame
-	if img == None:
-		break
 	
+	# Exit loop on last frame
+	if RET == False:
+		break
+
 	# define range of fire color
 	lower_fire = np.array([0,60,160])
 	upper_fire = np.array([80,170,255])
@@ -59,17 +76,22 @@ while(cap.isOpened()):
 	# Bitwise-AND mask and original image
 	res = cv2.bitwise_and(img,img, mask= dilation)
 
+<<<<<<< HEAD
 	res_blobs = classifyBlobs(res)
 
 	double = np.hstack((img, res_blobs))
 
 
+=======
+	double = np.hstack((img, res))
+>>>>>>> origin/master
 
 	cv2.imshow('Frame',double)
 	
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 
+<<<<<<< HEAD
 # Setup SimpleBlobDetector parameters.
 params = cv2.SimpleBlobDetector_Params()
 
@@ -98,6 +120,11 @@ params.minInertiaRatio = 0.01
 # bounds of HSV color space we want to classify
 FIRE_MIN = np.array([0, 10, 100],np.uint8)
 FIRE_MAX = np.array([34, 250, 250],np.uint8)
+=======
+	# Run at 25 fps
+	while int(round(time.time() * 1000)) < startlooptime + frametime:
+		pass
+>>>>>>> origin/master
 
 # When everything done, release the capture
 cap.release()
