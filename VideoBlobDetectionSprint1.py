@@ -1,8 +1,12 @@
 # Standard imports
 import cv2
 import numpy as np;
+import sys
 
-VIDEO_FILE = 'aigfire.mp4'
+if len(sys.argv) < 2:
+	VIDEO_FILE = 'slaapkamerbrand2.mp4'
+else:
+	VIDEO_FILE = sys.argv[1]
 
 cap = cv2.VideoCapture(VIDEO_FILE);
 
@@ -36,10 +40,11 @@ while(cap.isOpened()):
 	# Bitwise-AND mask and original image
 	res = cv2.bitwise_and(img,img, mask= dilation)
 
+
 	double = np.hstack((img, res))
 
 	cv2.imshow('Frame',double)
-
+	
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 
