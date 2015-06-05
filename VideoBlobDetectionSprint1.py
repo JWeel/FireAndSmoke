@@ -11,7 +11,7 @@ else:
 
 cap = cv2.VideoCapture(VIDEO_FILE)
 
-fps = cap.get(5) # 5 is index of framerate property of video
+fps = cap.get(5) # 5 is index of the frame-rate property of video
 print fps
 
 # create window that will contain original and altered footage
