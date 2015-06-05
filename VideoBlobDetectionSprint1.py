@@ -3,24 +3,29 @@ import cv2
 import numpy as np;
 import sys
 
+# check for command-line file, use default if none given
 if len(sys.argv) < 2:
 	VIDEO_FILE = 'slaapkamerbrand2.mp4'
 else:
 	VIDEO_FILE = sys.argv[1]
 
-cap = cv2.VideoCapture(VIDEO_FILE);
+cap = cv2.VideoCapture(VIDEO_FILE)
 
+fps = cap.get(5) # 5 is index of framerate property of video
+print fps
+
+# create window that will contain original and altered footage
 cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Frame', 2133, 600)
 
 while(cap.isOpened()):
 	# Read frame from video
 	RET, img = cap.read()
-
-	# Exit loop on last frame
-	if img == None:
-		break
 	
+	# Exit loop on last frame
+	if RET == False:
+		break
+
 	# define range of fire color
 	lower_fire = np.array([0,60,160])
 	upper_fire = np.array([80,170,255])
