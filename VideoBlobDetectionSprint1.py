@@ -3,7 +3,7 @@ import cv2
 import numpy as np;
 import sys
 import time
-from time import sleep
+import os.path
 
 # check for command-line file, use default if none given
 if len(sys.argv) < 2:
@@ -11,10 +11,16 @@ if len(sys.argv) < 2:
 else:
 	VIDEO_FILE = sys.argv[1]
 
+# halt if file doesn't exist
+if not os.path.isfile(VIDEO_FILE):
+	print 'Video file not found.'
+	sys.exit()
+
 cap = cv2.VideoCapture(VIDEO_FILE)
 
+# calculate frame-rate for updating bit-masking
 fps = cap.get(5) # 5 is index of the frame-rate property of video
-print fps
+frametime = 1000 / fps
 
 # create window that will contain original and altered footage
 cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
@@ -48,7 +54,6 @@ while(cap.isOpened()):
 	# Bitwise-AND mask and original image
 	res = cv2.bitwise_and(img,img, mask= dilation)
 
-
 	double = np.hstack((img, res))
 
 	cv2.imshow('Frame',double)
@@ -57,12 +62,8 @@ while(cap.isOpened()):
 		break
 
 	# Run at 25 fps
-	while int(round(time.time() * 1000)) < startlooptime + 40:
+	while int(round(time.time() * 1000)) < startlooptime + frametime:
 		pass
-
-
-		
-
 
 # When everything done, release the capture
 cap.release()
