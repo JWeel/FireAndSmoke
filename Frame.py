@@ -10,9 +10,18 @@ Handles the windows and the video loop.
 '''
 class Frame:
 	def __init__(self):
+		self.transformations = []
 		cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 		cv2.resizeWindow('Frame', 2133, 600)
 		self.video = None
+
+	'''
+	Add a transformation.
+
+	@param Transformation transformation
+	'''
+	def addTransformation(self, transformation):
+		self.transformation.append(transformation)
 
 	'''
 	Set the video.
@@ -50,7 +59,19 @@ class Frame:
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			self.close()
 			return False
-		img = res = self.video.read()
+		img = self.video.read()
+		res = self.transform(img)
 		double = np.hstack((img, res))
 		cv2.imshow('Frame',double)
 		return True
+
+	'''
+	Perform all transformations on the given image and return a transformed image.
+
+	@param Image image
+	'''
+	def transform(self, image):
+		transformedImage = image
+		for transformation in self.transformations:
+			transformedImage = transformation.transform(transformedImage)
+		return transformedImage
