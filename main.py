@@ -4,6 +4,6 @@ from FireMask import FireMask
 
 video = Video('aigfire.mp4')
 frame = Frame()
-frame.transformations.append(FireMask())
+frame.addTransformation(FireMask())
 frame.setVideo(video)
 frame.run()
