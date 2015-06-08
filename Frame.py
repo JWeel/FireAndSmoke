@@ -21,7 +21,7 @@ class Frame:
 	@param Transformation transformation
 	'''
 	def addTransformation(self, transformation):
-		self.transformation.append(transformation)
+		self.transformations.append(transformation)
 
 	'''
 	Set the video.
