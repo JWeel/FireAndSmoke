@@ -1,0 +1,26 @@
+// De coole script
+// door J Weel
+
+$template0 = "D:\Documents\thermal\slpkmr\0000NUMBER_snap_RGB.jl"
+$template1 = "D:\Documents\thermal\slpkmr\000NUMBER_snap_RGB.jl"
+$template2 = "D:\Documents\thermal\slpkmr\00NUMBER_snap_RGB.jl"
+
+for $i = 0 to 0 do
+
+  if $i < 10
+    $currenttemplate = $template0
+  endif
+  if $i > 9
+    $currenttemplate = $template1
+  endif
+  if $i > 99
+    $currenttemplate = $template2
+  endif
+  
+  $image = ReplaceStr &$currenttemplate NUMBER $i
+  lread i $image
+  
+  $bmp = ReplaceStr &$image .jl .bmp
+  lwrite i $bmp
+
+endfor
