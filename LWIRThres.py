@@ -3,22 +3,33 @@
 # Standard imports
 import cv2
 import numpy as np;
+import sys
+import time
 
 #import os
 #for file in os.listdir("."):
 #    print(file)
 
 
-VIDEO_FILE = 'kelder_LWIR.mp4'
+if len(sys.argv) < 2:
+	VIDEO_FILE = 'aigfire.mp4'
+else:
+	VIDEO_FILE = sys.argv[1]
+
 
 cap = cv2.VideoCapture(VIDEO_FILE);
-print cap
+#print cap
 
 if not cap.isOpened():
 	print 'error'
 
+
+# calculate frame-rate for updating bit-masking
+fps = cap.get(5) # 5 is index of the frame rate property of a video
+frametime = 1000 / fps	
+	
 while(cap.isOpened()):
-	print 'Open'
+	startlooptime = int(round(time.time() * 1000))
 	# Capture frame-by-frame
 	RET, frame = cap.read()
 	frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -31,12 +42,17 @@ while(cap.isOpened()):
 	#mask = cv2.bitwise_not(mask)
 	frame2 = cv2.bitwise_and(mask, frameh)
 	cv2.imshow('2',frame2)
-	cv2.imshow('1',frame)
-	cv2.imshow('3',frameh)
+	#cv2.imshow('1',frame)
+	#cv2.imshow('3',frameh)
 
 
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
+		
+		
+		# Run at 25 fps
+	while int(round(time.time() * 1000)) < startlooptime + frametime:
+		pass
 
 # When everything done, release the capture
 cap.release()
