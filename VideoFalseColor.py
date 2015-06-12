@@ -31,18 +31,18 @@ while(cap.isOpened()):
 	#print 'Open'
 	# Capture frame-by-frame
 	RET, frame = cap.read()
-	frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-	frameg = cv2.GaussianBlur(frame, (5,5), 0)
-	frameh = cv2.equalizeHist(frameg)
+	#frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+	#frameg = cv2.GaussianBlur(frame, (5,5), 0)
+	#frameh = cv2.equalizeHist(frameg)
 	#frame = cv2.applyColorMap(frame, 2);
 
 	#kernel = np.ones((20,20), np.uint8)
-	mask = cv2.inRange(frameh, 230, 255)
+	#mask = cv2.inRange(frameh, 230, 255)
 	#mask = cv2.bitwise_not(mask)
-	frame2 = cv2.bitwise_and(mask, frameh)
-	cv2.imshow('2',frame2)
-	cv2.imshow('1',frame)
-	cv2.imshow('3',frameh)
+	#frame2 = cv2.bitwise_and(mask, frameh)
+	#cv2.imshow('2',frame2)
+	#cv2.imshow('1',frame)
+	#cv2.imshow('3',frameh)
 
 	frame = cv2.applyColorMap(frame, 2);
 	frame = cv2.resize(frame, (0,0), fx = 1, fy = 1)
