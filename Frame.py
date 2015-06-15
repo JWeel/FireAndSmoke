@@ -60,6 +60,7 @@ class Frame:
 			self.close()
 			return False
 		img = self.video.read()
+		img = cv2.resize(img,(640, 360), interpolation = cv2.INTER_AREA)
 		res = self.transform(img)
 		double = np.hstack((img, res))
 		cv2.imshow('Frame',double)
