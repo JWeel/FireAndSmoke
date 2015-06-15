@@ -33,5 +33,4 @@ class FireMask(Transformation):
 		#dilation = cv2.dilate(erosion,kernel,iterations=1)
 
 		# Bitwise-AND mask and original image
-		res = cv2.bitwise_and(img,img, mask=mask)
-		return res
+		return mask
