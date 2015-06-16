@@ -2,6 +2,7 @@ import cv2
 import time
 import numpy as np
 from Video import Video
+from MotionEstimator import MotionEstimator
 
 '''
 @class Frame
@@ -14,6 +15,7 @@ class Frame:
 		cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 		cv2.resizeWindow('Frame', 2133, 600)
 		self.video = None
+		self.previousImg = None
 
 	'''
 	Add a transformation.
@@ -60,9 +62,19 @@ class Frame:
 			self.close()
 			return False
 		img = self.video.read()
+		if self.previousImg != None:
+			estimate = MotionEstimator(24).estimate(self.previousImg, img)
+			for x in range(10):
+				for y in range(10):
+					i = x + estimate[0]
+					j = y + estimate[1]
+					img.itemset((300 + i, 300 + j, 2), 255)
+					img.itemset((300 + i, 300 + j, 0), 0)
+					img.itemset((300 + i, 300 + j, 1), 0)
 		res = self.transform(img)
 		double = np.hstack((img, res))
 		cv2.imshow('Frame',double)
+		self.previousImg = img
 		return True
 
 	'''
