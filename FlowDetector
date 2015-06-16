@@ -1,0 +1,16 @@
+from Transformation import Transformation
+import numpy as np
+import cv2
+
+class FlowDectector(Transformation):
+	def transform(self, img):
+
+		# Make image suitable for optical flow detection
+		# Fire should contain keypoints
+
+		# Detect keypoints
+
+		# Detect optical flow
+
+		# Draw vector fields
+		return res
