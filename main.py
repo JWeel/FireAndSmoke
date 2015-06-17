@@ -2,6 +2,8 @@ import sys
 from Frame import Frame
 from Video import Video
 from FireMask import FireMask
+from SimpleTransformationProcessor import SimpleTransformationProcessor
+from MaskApplication import MaskApplication
 
 # check for command-line file, use default if none given
 if len(sys.argv) < 2:
@@ -9,8 +11,7 @@ if len(sys.argv) < 2:
 else:
 	VIDEO_FILE = sys.argv[1]
 
-video = Video(VIDEO_FILE)
-frame = Frame()
-frame.addTransformation(FireMask())
-frame.setVideo(video)
+processor = SimpleTransformationProcessor(MaskApplication(FireMask()))
+frame = Frame(processor)
+frame.addStream("rgb", VIDEO_FILE)
 frame.run()

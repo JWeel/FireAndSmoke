@@ -1,6 +1,7 @@
 import cv2
 import time
 import numpy as np
+from VideoManager import VideoManager
 from Video import Video
 
 '''
@@ -9,34 +10,28 @@ from Video import Video
 Handles the windows and the video loop.
 '''
 class Frame:
-	def __init__(self):
-		self.transformations = []
+	def __init__(self, processor):
 		cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 		cv2.resizeWindow('Frame', 2133, 600)
-		self.video = None
+		self.processor = processor
+		self.videoManager = VideoManager(2)
+		self.previousImg = None
+		self.interval = 500
 
 	'''
-	Add a transformation.
+	Add a video stream.
 
-	@param Transformation transformation
+	@param string name
+	@param string filename
 	'''
-	def addTransformation(self, transformation):
-		self.transformations.append(transformation)
-
-	'''
-	Set the video.
-
-	@param Video video
-	'''
-	def setVideo(self, video):
-		self.video = video
+	def addStream(self, name, filename):
+		self.videoManager.addStream(name, filename)
 
 	'''
 	Close the application, including the windows.
 	'''
 	def close(self):
-		if self.video != None:
-			self.video.close()
+		self.videoManager.close()
 		cv2.destroyAllWindows()
 
 	'''
@@ -44,9 +39,10 @@ class Frame:
 	'''
 	def run(self):
 		ticks = int(time.time() * 1000)
-		while self.video != None:
+		self.videoManager.initialize()
+		while True:
 			newTicks = int(time.time() * 1000)
-			if newTicks > (ticks + self.video.getInterval()):
+			if newTicks > (ticks + self.interval):
 				ticks = newTicks
 				if not self.step():
 					break
@@ -59,20 +55,11 @@ class Frame:
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			self.close()
 			return False
-		img = self.video.read()
-		img = cv2.resize(img,(640, 360), interpolation = cv2.INTER_AREA)
-		res = self.transform(img)
+		if not self.videoManager.read():
+			return False
+		img = self.videoManager.get("rgb", 0)
+		res = self.processor.process(self.videoManager)
 		double = np.hstack((img, res))
 		cv2.imshow('Frame',double)
+		self.previousImg = img
 		return True
-
-	'''
-	Perform all transformations on the given image and return a transformed image.
-
-	@param Image image
-	'''
-	def transform(self, image):
-		transformedImage = image
-		for transformation in self.transformations:
-			transformedImage = transformation.transform(transformedImage)
-		return transformedImage
