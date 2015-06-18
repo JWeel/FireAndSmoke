@@ -5,4 +5,4 @@ class SimpleTransformationProcessor(ImageProcessor):
 		self.transformation = transformation
 
 	def process(self, manager):
-		return self.transformation.transform(manager.get("rgb", 0))
+		return self.transformation.transform(manager.get('rgb', 0))
