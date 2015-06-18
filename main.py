@@ -17,7 +17,6 @@ parser.add_argument('--fps', nargs=1, help="frames per second", metavar='F', def
 #	VIDEO_FILE = sys.argv[1]
 
 args = vars(parser.parse_args(sys.argv[1:]))
-print args
 VIDEO_FILE = args['stream']
 
 processor = SimpleTransformationProcessor(FireMask())
