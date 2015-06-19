@@ -11,11 +11,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--stream', help='the video file to stream', metavar='S', default='aigfire.mp4', type=str)
 parser.add_argument('--fps', help="frames per second", metavar='F', default=2, type=int)
 
-#if len(sys.argv) < 2:
-#	VIDEO_FILE = 'aigfire.mp4'
-#else:
-#	VIDEO_FILE = sys.argv[1]
-
 args = vars(parser.parse_args(sys.argv[1:]))
 VIDEO_FILE = args['stream']
 
