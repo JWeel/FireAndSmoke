@@ -3,9 +3,9 @@ cam = cv2.VideoCapture('tcp://192.168.1.1:5555')
 
 running = True
 while running: # get current frame of video
-	#running, frame = cam.read()
+	running, frame = cam.read()
 	if running:
-		#cv2.imshow('frame', frame)
+		cv2.imshow('frame', frame)
 		if cv2.waitKey(1) & 0xFF == 27: 
 			# escape key pressed
 			running = False
