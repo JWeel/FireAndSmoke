@@ -58,7 +58,7 @@ class Frame:
 		if not self.videoManager.read():
 			return False
 		img = self.videoManager.get("rgb", 0)
-		res = self.processor.process(self.videoManager)
+		(img, res) = self.processor.process(self.videoManager)
 		double = np.hstack((img, res))
 		cv2.imshow('Frame',double)
 		self.previousImg = img
