@@ -15,10 +15,6 @@ class Video:
 	'''
 	def __init__(self, filename, n=2):
 		self.n = n
-		# halt if file doesn't exist
-		if not os.path.isfile(filename):
-			print 'Video file not found.'
-			sys.exit()
 		self.cap = cv2.VideoCapture(filename)
 		# calculate frame-rate for updating bit-masking
 		self.fps = self.cap.get(5) # 5 is index of the frame rate property of a video

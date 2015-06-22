@@ -8,7 +8,7 @@ from MaskApplication import MaskApplication
 # check for command-line file, use default if none given
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-s', '--stream', help='the video file to stream', metavar='S', default='aigfire.mp4', type=str)
+parser.add_argument('-s', '--stream', help='the video file to stream', metavar='S', type=str, required=True)
 parser.add_argument('--fps', help="frames per second", metavar='F', default=2, type=int)
 
 args = vars(parser.parse_args(sys.argv[1:]))
