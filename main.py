@@ -15,8 +15,8 @@ parser.add_argument('--fps', help="frames per second", metavar='F', default=2, t
 args = vars(parser.parse_args(sys.argv[1:]))
 VIDEO_FILE = args['stream']
 
-#processor = SimpleTransformationProcessor(FireMask())
-processor = MotionProcessor()
+processor = SimpleTransformationProcessor(FireMask())
+#processor = MotionProcessor()
 frame = Frame(processor, args['fps'])
 frame.addStream('rgb', VIDEO_FILE)
 frame.run()
