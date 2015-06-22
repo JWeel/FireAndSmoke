@@ -6,5 +6,5 @@ class SimpleTransformationProcessor(ImageProcessor):
 
 	def process(self, manager):
 		img = manager.get('rgb', 0)
-		res = self.transformation.transform()
-		return (img, res) 
+		res = self.transformation.transform(img)
+		return (img, res)
