@@ -10,16 +10,22 @@ from Video import Video
 Handles the windows and the video loop.
 '''
 class Frame:
-	def __init__(self, processor, fps, fullscreen=False):
+	def __init__(self, processor, fps, fullscreen=False, stack=True):
 		cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 		if fullscreen:
 			cv2.setWindowProperty('Frame', 
 								cv2.WND_PROP_FULLSCREEN, cv2.cv.CV_WINDOW_FULLSCREEN)
-		cv2.resizeWindow('Frame', 2133, 600)
+		
+		if stack:
+			cv2.resizeWindow('Frame', 2133, 600)
+		else:
+			cv2.resizeWindow('Frame', 1066, 600)
+		
 		self.processor = processor
 		self.videoManager = VideoManager(2)
 		self.previousImg = None
 		self.interval = int(1000 / fps)
+		self.stack = stack
 
 	'''
 	Add a video stream.
@@ -62,7 +68,12 @@ class Frame:
 			return False
 		img = self.videoManager.get("rgb", 0)
 		(img, res) = self.processor.process(self.videoManager)
-		double = np.hstack((img, res))
-		cv2.imshow('Frame', double)
+		
+		if self.stack:
+			double = np.hstack((img, res))
+			cv2.imshow('Frame', double)
+		else:
+			cv2.imshow('Frame', img)
+		
 		self.previousImg = img
 		return True

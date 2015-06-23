@@ -17,11 +17,14 @@ parser.add_argument('--fullscreen', help="set output to fullsceen", action='stor
 args = vars(parser.parse_args(sys.argv[1:]))
 VIDEO_FILE = args['stream']
 
+stack = True
+
 if args['processor'] == 'firemask':
     processor = SimpleTransformationProcessor(FireMask())
+    stack = False
 
 #processor = MotionProcessor()
-frame = Frame(processor, args['fps'], args['fullscreen'])
+frame = Frame(processor, args['fps'], args['fullscreen'], stack)
 frame.addStream('rgb', VIDEO_FILE)
 frame.run()
 frame.close()
