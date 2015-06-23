@@ -4,7 +4,6 @@ from Frame import Frame
 from FireMask import FireMask
 from SimpleTransformationProcessor import SimpleTransformationProcessor
 from MaskApplication import MaskApplication
-from MotionProcessor import MotionProcessor
 
 # check for command-line file, use default if none given
 
