@@ -49,7 +49,7 @@ class FireMask(Transformation):
 		blobs = cv2.erode(mask, np.ones((5,5), np.uint8), iterations=1)
 		blobs = cv2.dilate(blobs, np.ones((5, 5), np.uint8), iterations=1)
 		
-		contours0, hierarchy = cv2.findContours( blobs.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+		contours0, hierarchy = cv2.findContours( blobs.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 		moments  = [cv2.moments(cnt) for cnt in contours0]
 		parameters = [(
 					(int(round(m['m10']/m['m00'])), int(round(m['m01']/m['m00']))),
