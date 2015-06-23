@@ -10,8 +10,11 @@ from Video import Video
 Handles the windows and the video loop.
 '''
 class Frame:
-	def __init__(self, processor, fps):
+	def __init__(self, processor, fps, fullscreen=False):
 		cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
+		if fullscreen:
+			cv2.setWindowProperty('Frame', 
+								cv2.WND_PROP_FULLSCREEN, cv2.cv.CV_WINDOW_FULLSCREEN)
 		cv2.resizeWindow('Frame', 2133, 600)
 		self.processor = processor
 		self.videoManager = VideoManager(2)
@@ -60,6 +63,6 @@ class Frame:
 		img = self.videoManager.get("rgb", 0)
 		(img, res) = self.processor.process(self.videoManager)
 		double = np.hstack((img, res))
-		cv2.imshow('Frame',double)
+		cv2.imshow('Frame', double)
 		self.previousImg = img
 		return True
