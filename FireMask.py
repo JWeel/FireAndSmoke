@@ -19,7 +19,7 @@ class FireMask(Transformation):
 		# get dimensions
 		height, width, depth = img.shape
 		redThres = 180
-		satThres = 40 # default 140
+		satThres = 140 # default 140
 
 		#mask = np.zeros((height, width), dtype=np.uint8)
 
@@ -30,45 +30,38 @@ class FireMask(Transformation):
 		#			if hsv.item(i,j,1) > satThres: 
 		#				mask[i,j] = 255
 		
-		mask = np.all([img[:,:,2] > redThres, img[:,:,2] > (img[:,:,1]*1.4), 
-			img[:,:,1] > (img[:,:,0] * 1.4), hsv[:,:,1] > satThres], axis=0).astype(np.uint8) * 255
+		mask = np.all([img[:,:,2] > redThres, img[:,:,2] > (img[:,:,1]*1), 
+			img[:,:,1] > (img[:,:,0] * 1), hsv[:,:,1] > satThres], axis=0).astype(np.uint8) * 255
 		
 		# Creates arrays of x- and y- values within threshold
-		#xcoords, ycoords = np.where(mask == 255)
+		#xcoords, ycoords = np.where(mask == 255
 
-		kernel = np.ones((1,1), np.uint8)
-		erosion = cv2.erode(mask,kernel,iterations=1)
-		dilation = cv2.dilate(erosion,kernel,iterations=1)
+		#kernel = np.ones((1,1), np.uint8)
+		#erosion = cv2.erode(mask,kernel,iterations=1)
+		#dilation = cv2.dilate(erosion,kernel,iterations=1)
 		
 		# Bitwise-AND mask and original image
-		res = cv2.bitwise_and(img, img, mask= dilation)
+		#res = cv2.bitwise_and(img, img, mask= dilation)
 		
 		#test = cv2.dilate(mask,np.ones((9,9), np.uint8),iterations=1)
 		#cv2.imshow("a", test)
 		
-		blobs = cv2.erode(mask, np.ones((5,5), np.uint8), iterations=1)
-		blobs = cv2.dilate(blobs, np.ones((5, 5), np.uint8), iterations=1)
+		erosion = cv2.erode(mask, np.ones((5, 5), np.uint8), iterations=1)
+		dilation = cv2.dilate(erosion, np.ones((5, 5), np.uint8), iterations=2)
 		
-		contours0, hierarchy = cv2.findContours( blobs.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+		contours0, hierarchy = cv2.findContours( dilation.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 		moments  = [cv2.moments(cnt) for cnt in contours0]
-		parameters = [(
-					(int(round(m['m10']/m['m00'])), int(round(m['m01']/m['m00']))),
-					(int(round(m['m10']-m['m00']))+int(round(m['m01']-m['m00'])))/4000
-					) for m in moments]
-
+		parameters = [(int(round(m['m10']/m['m00'])), int(round(m['m01']/m['m00']))) for m in moments]
 
 		if self.sectors == None:
 			shape  = np.asarray(img.shape[0:2])
-			sector = (shape/[20, 30])
-			self.sectors = np.zeros(shape/sector)
-			self.sector  = sector
+			self.sector = (shape/[40, 60])
+			self.sectors = np.zeros(shape/self.sector)
 
 		self.sectors -= (self.sectors > 0).astype(int)
 		
 		if self.fire > 0:
 			self.fire -= 1
-	
-	
 
 		for key in self.attention.keys():
 			if self.attention[key] > 0:
@@ -81,11 +74,8 @@ class FireMask(Transformation):
 				cv2.circle(img, (position[0] + int(round(self.sector[0]*.5)), position[1] + 
 								int(round(self.sector[1]*.5))), radius, (0,0,255), 3)
 
-		for (centroid, radius) in parameters:
-			sector = centroid/self.sector
-			
-			y = sector[0] - 1
-			x = sector[1] - 1
+		for centroid in parameters:
+			(y, x) = (centroid / self.sector) - 1
 			
 			if self.fire == 0:
 				self.attention[(y, x)] = 60
@@ -95,17 +85,34 @@ class FireMask(Transformation):
 			
 			if y < self.sectors.shape[0] and self.sectors[y][x] < 10:
 				self.sectors[y][x] += 5
-
+		
+		for (y, x) in np.transpose(np.nonzero(self.sectors)):
+			position = np.multiply([y+1, x+1], self.sector)
 			
-			#position = np.multiply([y, x], self.sector)
-			#position = np.matrix([x, y]) * self.sector
+			cv2.rectangle(
+				img,
+				tuple(position),
+				tuple(position + np.array(self.sector)),
+				(0, 255, 0), 
+				1,
+				4
+			)
+		
+			
+			
 		for y in range(0, self.sectors.shape[0]):
 			for x in range(0, self.sectors.shape[1]):
 				if self.sectors[y][x] > 0:
 					position = np.multiply([y+1, x+1], self.sector)
-					cv2.rectangle(img, (position[0], position[1]),
-								(position[0] + self.sector[0], position[1] + self.sector[1])
-								 , (0, 255, 0), 1, 4)
+					
+					cv2.rectangle(
+						img,
+						tuple(position),
+						tuple(position + np.array(self.sector)),
+						(0, 255, 0), 
+						1,
+						4
+					)
 		
 		# Draw circle on center of blob. Works for single blob only
 		#if len(xcoords) > 0:
@@ -113,4 +120,4 @@ class FireMask(Transformation):
 			# image, center, radius, color, thickness
 		#	cv2.circle(img, blobcenter, 10 + int(round(math.sqrt(len(xcoords)))), (0,255,0),1)
 
-		return res
+		return dilation
