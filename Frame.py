@@ -10,11 +10,11 @@ from Video import Video
 Handles the windows and the video loop.
 '''
 class Frame:
-	def __init__(self, processor, fps):
+	def __init__(self, processor, fps, n=2):
 		cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
 		cv2.resizeWindow('Frame', 2133, 600)
 		self.processor = processor
-		self.videoManager = VideoManager(2)
+		self.videoManager = VideoManager(n)
 		self.previousImg = None
 		self.interval = int(1000 / fps)
 
