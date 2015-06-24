@@ -5,6 +5,8 @@ from FireMask import FireMask
 from SimpleTransformationProcessor import SimpleTransformationProcessor
 from MaskApplication import MaskApplication
 from _dbus_bindings import Boolean
+from JLVideo import JLVideo
+from extractor.Int16ImageExtractor import Int16ImageExtractor
 
 # check for command-line file, use default if none given
 
@@ -24,7 +26,12 @@ if args['processor'] == 'firemask':
     stack = False
 
 #processor = MotionProcessor()
-frame = Frame(processor, args['fps'], args['fullscreen'], stack)
+frame = Frame(processor, args['fps'], n=2, fullscreen=args['fullscreen'], stack=stack)
 frame.addStream('rgb', VIDEO_FILE)
+
+#video = JLVideo('SWIRCamera', '%05d_snap_SWIR.jl', Int16ImageExtractor(), n=2)
+#frame.videoManager.videos['swir'] = video
+#video.open('SWIRCamera')
+
 frame.run()
 frame.close()

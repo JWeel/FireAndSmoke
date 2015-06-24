@@ -7,6 +7,7 @@ class VideoManager:
 
 	def addStream(self, name, filename):
 		self.videos[name] = Video(filename, self.n)
+		self.videos[name].open(filename)
 
 	def get(self, name, t=0):
 		return self.videos[name].get(t)
