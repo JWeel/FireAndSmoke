@@ -1,6 +1,10 @@
 from Extractor import Extractor
 import struct
 
+'''
+@class DoubleImageExtractor
+JL DoubleImage extractor. Can be used to extract SWIR images.
+'''
 class DoubleImageExtractor(Extractor):
     def getImageType(self):
         return 'DoubleImage'

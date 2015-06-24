@@ -1,15 +1,36 @@
 import numpy as np
 
+'''
+@class Extractor
+@abstract
+
+Abstract JL image extractor.
+'''
 class Extractor:
     def __init__(self, verbose=True):
         self.verbose = verbose
     
+    '''
+    Image header type.
+    
+    @return string
+    '''
     def getImageType(self):
         pass
     
+    '''
+    Number of bytes per pixel.
+    
+    @return int
+    '''
     def getPixelByteCount(self):
         pass
     
+    '''
+    Reads a string of byte characters and returns a pixel value.
+    
+    @return mixed
+    '''
     def readPixel(self, pixelString):
         pass
     
