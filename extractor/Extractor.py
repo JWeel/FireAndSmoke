@@ -48,12 +48,12 @@ class Extractor:
                 print 'Not a JL file'
             return None
         f.read(1)
-        typeMatcher = 'DoubleImage'
+        typeMatcher = self.getImageType()
         headerType = f.read(len(typeMatcher))
         f.read(1)
         if headerType != typeMatcher:
             if self.verbose:
-                print headerType + ' is not a double image'
+                print headerType + ' is not detected'
             return None
         height = int(f.read(4))
         width = int(f.read(4))
