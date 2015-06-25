@@ -15,11 +15,13 @@ class Video:
 	'''
 	def __init__(self, filename, n=2):
 		self.n = n
+		self.images = []
+		
+	def open(self, filename):
 		self.cap = cv2.VideoCapture(filename)
 		# calculate frame-rate for updating bit-masking
 		self.fps = self.cap.get(5) # 5 is index of the frame rate property of a video
 		self.frametime = 1000 / self.fps
-		self.images = []
 
 	def get(self, t=0):
 		i = self.n - t - 1
@@ -44,11 +46,14 @@ class Video:
 		retval, image = self.cap.read()
 		if retval == False:
 			return None
+		self.addToBuffer(image)
+		return image
+	
+	def addToBuffer(self, image):
 		self.images.append(image)
 		if len(self.images) > self.n:
 			self.images = self.images[1:]
-		return image
-
+	
 	'''
 	Close the video stream.
 	'''
