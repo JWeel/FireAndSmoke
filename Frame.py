@@ -26,6 +26,7 @@ class Frame:
 		self.interval = int(1000 / fps)
 		self.stack = stack
 		self.screenshot = 0
+		self.recording = False
 
 	'''
 	Add a video stream.
@@ -68,17 +69,16 @@ class Frame:
 			self.close()
 			return False
 		elif key == ord('s'):
-			print "bla"
-			if self.screenshot > 0:
-				self.screenshot = 0
+			if self.recording:
+				self.recording = False
 			else:
-				self.screenshot = 1
+				self.recording = True
 
 		if not self.videoManager.read():
 			return False
 		(img, res) = self.processor.process(self.videoManager)
 		
-		if self.screenshot > 0:
+		if self.recording:
 			cv2.imwrite("screenshot" + str(self.screenshot) + ".jpg", img)
 			if self.screenshot % 4 == 0 or self.screenshot % 4 == 1:
 				cv2.circle(img, (20,20), 10, (0,0,255), -1)
