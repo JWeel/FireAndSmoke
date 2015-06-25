@@ -25,6 +25,7 @@ class Frame:
 		self.previousImg = None
 		self.interval = int(1000 / fps)
 		self.stack = stack
+		self.screenshot = 0
 
 	'''
 	Add a video stream.
@@ -60,12 +61,29 @@ class Frame:
 	checking for an exit event.
 	'''
 	def step(self):
-		if cv2.waitKey(1) & 0xFF == ord('q'):
+		
+		key = cv2.waitKey(1) & 255
+
+		if key == ord('q'):
 			self.close()
 			return False
+		elif key == ord('s'):
+			print "bla"
+			if self.screenshot > 0:
+				self.screenshot = 0
+			else:
+				self.screenshot = 1
+
 		if not self.videoManager.read():
 			return False
 		(img, res) = self.processor.process(self.videoManager)
+		
+		if self.screenshot > 0:
+			cv2.imwrite("screenshot" + str(self.screenshot) + ".jpg", img)
+			if self.screenshot % 4 == 0 or self.screenshot % 4 == 1:
+				cv2.circle(img, (20,20), 10, (0,0,255), -1)
+			self.screenshot += 1
+		
 		
 		if self.stack:
 			double = np.hstack((img, res))
