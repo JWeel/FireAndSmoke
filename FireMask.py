@@ -1,123 +1,111 @@
 from Transformation import Transformation
-from FirePixelDetector import FirePixelDetector
+#from FirePixelDetector import FirePixelDetector
 import numpy as np
 import cv2
 import math
 
-
 class FireMask(Transformation):
 
 	def __init__(self):
+		self.kernel = np.ones((5, 5), np.uint8)
 		self.sectors = None
 		self.sector = np.matrix([0, 0]) # (width, height)
+		self.squares = None
 		self.fire = 0
 		self.attention = {}
+		self.frame = 0
 		
 	def transform(self, img):
+
+		KERNEL    = np.ones((1, 1), np.uint8)
+		RED_THRES = 180 # default 180
+		SAT_THRES = 140 # default 140
+		BUF_SIZE  = 30
+		DIM       = np.array([20, 33]) # default 20, 33
 		
+		# Get HSV color space		
 		hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-		# get dimensions
-		height, width, depth = img.shape
-		redThres = 180
-		satThres = 140 # default 140
-
-		#mask = np.zeros((height, width), dtype=np.uint8)
-
-		# Thresholding
-		#for i in range(0, height):
-		#	for j in range(0, width):
-		#		if img.item(i,j,2) > redThres and img.item(i,j,2) > img.item(i,j,1) and img.item(i,j,1) > img.item(i,j,0): 
-		#			if hsv.item(i,j,1) > satThres: 
-		#				mask[i,j] = 255
 		
-		mask = np.all([img[:,:,2] > redThres, img[:,:,2] > (img[:,:,1]*1), 
-			img[:,:,1] > (img[:,:,0] * 1), hsv[:,:,1] > satThres], axis=0).astype(np.uint8) * 255
+		# Compose mask according to different thresholds in RGB and HSV color 
+		# space
+		mask = np.all([
+				img[:,:,2] > RED_THRES,
+				img[:,:,2] > (img[:,:,1]*1.3), 
+				img[:,:,1] > (img[:,:,0]*1.3),
+				hsv[:,:,1] > SAT_THRES
+			], axis=0).astype(np.uint8) * 255
 		
-		# Creates arrays of x- and y- values within threshold
-		#xcoords, ycoords = np.where(mask == 255
-
-		#kernel = np.ones((1,1), np.uint8)
-		#erosion = cv2.erode(mask,kernel,iterations=1)
-		#dilation = cv2.dilate(erosion,kernel,iterations=1)
+		# Erode mask and dilate mask to remove noise
+		erosion = cv2.erode(mask, KERNEL, iterations=1)
+		dilation = cv2.dilate(erosion, KERNEL, iterations=1)
 		
-		# Bitwise-AND mask and original image
-		#res = cv2.bitwise_and(img, img, mask= dilation)
-		
-		#test = cv2.dilate(mask,np.ones((9,9), np.uint8),iterations=1)
-		#cv2.imshow("a", test)
-		
-		erosion = cv2.erode(mask, np.ones((5, 5), np.uint8), iterations=1)
-		dilation = cv2.dilate(erosion, np.ones((5, 5), np.uint8), iterations=2)
-		
-		contours0, hierarchy = cv2.findContours( dilation.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-		moments  = [cv2.moments(cnt) for cnt in contours0]
-		parameters = [(int(round(m['m10']/m['m00'])), int(round(m['m01']/m['m00']))) for m in moments]
-
+		# Compose output image
+		#res = cv2.bitwise_and(img, img, mask=dilation)
+		res = []
+		# Initialize sector space
 		if self.sectors == None:
-			shape  = np.asarray(img.shape[0:2])
-			self.sector = (shape/[40, 60])
-			self.sectors = np.zeros(shape/self.sector)
+			shape			= np.asarray(img.shape[0:2])
+			self.sector 	= shape/DIM
+			self.sectors 	= np.zeros(np.hstack((DIM, np.array([BUF_SIZE]))))
+			self.squares	= np.zeros(DIM)
+				
+		# Increment frame		
+		if self.frame < (BUF_SIZE - 1):
+			self.frame += 1
 
-		self.sectors -= (self.sectors > 0).astype(int)
+		self.sectors = np.dstack((self.sectors[:,:,1:BUF_SIZE], np.zeros(DIM)))
+			
+		# Find contours in image
+		contours0, hierarchy = cv2.findContours(
+			dilation.copy(),
+			cv2.RETR_EXTERNAL,
+			cv2.CHAIN_APPROX_SIMPLE
+		)
 		
-		if self.fire > 0:
-			self.fire -= 1
+		moments  = [cv2.moments(cnt) for cnt in contours0]
+		
+		parameters = []
+		for m in moments:
+			  try:
+			  	centroid = (int(round(m['m10']/m['m00'])), int(round(m['m01']/m['m00'])))
+			  	parameters.append(centroid)
+			  except ZeroDivisionError:
+			  	pass
 
-		for key in self.attention.keys():
-			if self.attention[key] > 0:
-				radius = self.attention[key] + 30
-				self.attention[key] -= 1
-				(u, v) = key
-				
-				position = np.multiply([u+1, v+1], self.sector)
-				
-				cv2.circle(img, (position[0] + int(round(self.sector[0]*.5)), position[1] + 
-								int(round(self.sector[1]*.5))), radius, (0,0,255), 3)
-
+		# Set sectors in current frame
 		for centroid in parameters:
-			(y, x) = (centroid / self.sector) - 1
+			(x, y) = (centroid / self.sector)
 			
-			if self.fire == 0:
-				self.attention[(y, x)] = 60
+			# For testing purposes only
+			cv2.circle(img, (centroid), 10, (0,0,255), 1)
 			
-			if len(parameters) > 0 and self.fire < 300:
-				self.fire += 10
-			
-			if y < self.sectors.shape[0] and self.sectors[y][x] < 10:
-				self.sectors[y][x] += 5
+			if x < self.sectors.shape[1]:
+				self.sectors[y, x - 1, BUF_SIZE-1] += 1
 		
-		for (y, x) in np.transpose(np.nonzero(self.sectors)):
-			position = np.multiply([y+1, x+1], self.sector)
+		for (y, x) in np.transpose(np.nonzero(np.sum(self.sectors, axis=2))):
 			
+			var = np.var(self.sectors[y, x, :])
+			
+			if var > 0.2:
+
+				position = np.multiply([y, x], self.sector)
+				
+				if self.squares[y, x] < BUF_SIZE:
+					self.squares[y, x] +=  BUF_SIZE
+										
+ 		for (y, x) in np.transpose(np.nonzero(self.squares)):
+
+ 			position = np.multiply([y, x], self.sector)
+ 			
 			cv2.rectangle(
 				img,
-				tuple(position),
-				tuple(position + np.array(self.sector)),
+				tuple(position[::-1]),
+				tuple(position[::-1] + np.array(self.sector[::-1])),
 				(0, 255, 0), 
 				1,
 				4
 			)
-		
 			
-			
-		for y in range(0, self.sectors.shape[0]):
-			for x in range(0, self.sectors.shape[1]):
-				if self.sectors[y][x] > 0:
-					position = np.multiply([y+1, x+1], self.sector)
-					
-					cv2.rectangle(
-						img,
-						tuple(position),
-						tuple(position + np.array(self.sector)),
-						(0, 255, 0), 
-						1,
-						4
-					)
-		
-		# Draw circle on center of blob. Works for single blob only
-		#if len(xcoords) > 0:
-		#	blobcenter = (int(round(np.average(ycoords))), int(round(np.average(xcoords))))
-			# image, center, radius, color, thickness
-		#	cv2.circle(img, blobcenter, 10 + int(round(math.sqrt(len(xcoords)))), (0,255,0),1)
+			self.squares[y, x] -= 1
 
-		return dilation
+		return res
