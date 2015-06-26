@@ -73,6 +73,9 @@ class Frame:
 				self.recording = False
 			else:
 				self.recording = True
+		elif key == ord('f'):
+			cv2.setWindowProperty('Frame', 
+								cv2.WND_PROP_FULLSCREEN, cv2.cv.CV_WINDOW_FULLSCREEN)
 
 		if not self.videoManager.read():
 			return False
